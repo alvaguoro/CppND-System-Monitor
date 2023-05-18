@@ -105,7 +105,7 @@ void NCursesDisplay::DisplayProcesses(std::map<int, Process>& processes,
     
     mvwprintw(window, row, pid_column, to_string(processVector[i].Pid()).c_str());
     mvwprintw(window, row, user_column, processVector[i].User().c_str());
-    float cpu = processVector[i].cpuUtilization * 100.00;
+    double cpu = processVector[i].cpuUtilization * 100.00;
     mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
     mvwprintw(window, row, ram_column, processVector[i].Ram().c_str());
     mvwprintw(window, row, time_column,
@@ -122,7 +122,7 @@ void NCursesDisplay::Display(System& system, int n) {
   start_color();  // enable color
 
   int x_max{getmaxx(stdscr)};
-  WINDOW* system_window = newwin(15, x_max - 1, 0, 0);
+  WINDOW* system_window = newwin(10 + system.Cpu().CPUs.size(), x_max - 1, 0, 0);
   WINDOW* process_window =
       newwin(3 + n, x_max - 1, system_window->_maxy + 1, 0);
 
