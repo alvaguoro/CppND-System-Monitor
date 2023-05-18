@@ -116,17 +116,56 @@ long LinuxParser::UpTime()
 }
 
 // TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
+long LinuxParser::Jiffies() 
+{ 
+  //Already done with CpuUtilization
+  return 0;
+}
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::ActiveJiffies(int pid) 
+{ 
+  string line, time;
+  long activeJiffies = 0;
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
+
+  if (stream.is_open()) 
+  {
+    if(std::getline(stream, line))
+    {
+      std::istringstream linestream(line);
+      int i = 0;
+      while (linestream >> time) 
+      {
+        if(i == 13 || i == 14 || i == 15 || i == 16)
+          activeJiffies += stol(time);
+
+        ++i;
+      }
+    }
+    else
+    {
+      return 0;
+    }
+  }
+
+  return activeJiffies;
+}
 
 // TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+long LinuxParser::ActiveJiffies() 
+{ 
+  //Already done with CpuUtilization
+  return 0;
+}
 
 // TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+long LinuxParser::IdleJiffies() 
+{ 
+  //Already done with CpuUtilization
+  return 0;
+}
 
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() 
@@ -311,28 +350,4 @@ long LinuxParser::UpTime(int pid)
     return 0;
 
   return std::stol(arr[21])/sysconf(_SC_CLK_TCK);
-}
-
-string* LinuxParser::CpuUtilizationPerProcess(int pid)
-{
-  string uid = LinuxParser::Uid(pid);
-
-  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
-  string line;
-  string* arr = new string[22];
-  if (stream.is_open()) 
-  {
-    int i = 0;
-    if(std::getline(stream, line))
-    {
-      std::istringstream linestream(line);
-      while(linestream.good() && i < 22)
-      {
-        linestream >> arr[i];
-        ++i;
-      }
-    }
-  }
-
-  return arr;
 }

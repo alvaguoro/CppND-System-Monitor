@@ -7,7 +7,7 @@ using std::vector;
 Processor::Processor()
 {
     vector<string> cpus1 = LinuxParser::CpuUtilization();
-    for(int i = 0; i < cpus1.size(); i++)
+    for(int i = 0; i < (int)cpus1.size(); i++)
     {
         std::istringstream linestream1(cpus1[i]);
         CPU cpu;
@@ -25,7 +25,7 @@ void Processor::Utilization()
 
     string discard;
 
-    for(int i = 0; i < cpus2.size(); i++)
+    for(int i = 0; i < (int)cpus2.size(); i++)
     {
         std::istringstream linestream2(cpus2[i]);
 

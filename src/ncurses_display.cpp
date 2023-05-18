@@ -36,7 +36,7 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
 
   system.Cpu().Utilization();
 
-  for(int i = 0; i < system.Cpu().CPUs.size(); i++)
+  for(int i = 0; i < (int)system.Cpu().CPUs.size(); i++)
   {
     wattroff(window, COLOR_PAIR(1));
     std::string name = system.Cpu().CPUs[i].name + ": ";
@@ -84,26 +84,34 @@ void NCursesDisplay::DisplayProcesses(std::map<int, Process>& processes,
   std::vector<Process> processVector;
   for (auto process : processes) 
   {
-    processVector.push_back(process.second);
+    if(!process.second.updated)
+    {
+      processes.erase(process.first);
+    }
+    else
+    {
+      processVector.push_back(process.second);
+    }
   }
 
   std::sort(processVector.begin(), processVector.end());
+  std::reverse(processVector.begin(), processVector.end());
 
-  for (auto process : processVector) 
+  for (int i = 0; i < n; i++) 
   {
     //You need to take care of the fact that the cpu utilization has already been multiplied by 100.
     // Clear the line
     mvwprintw(window, ++row, pid_column, (string(window->_maxx-2, ' ').c_str()));
     
-    mvwprintw(window, row, pid_column, to_string(process.Pid()).c_str());
-    mvwprintw(window, row, user_column, process.User().c_str());
-    float cpu = process.CpuUtilization() * 100;
+    mvwprintw(window, row, pid_column, to_string(processVector[i].Pid()).c_str());
+    mvwprintw(window, row, user_column, processVector[i].User().c_str());
+    float cpu = processVector[i].cpuUtilization * 100.00;
     mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
-    mvwprintw(window, row, ram_column, process.Ram().c_str());
+    mvwprintw(window, row, ram_column, processVector[i].Ram().c_str());
     mvwprintw(window, row, time_column,
-              Format::ElapsedTime(process.UpTime()).c_str());
+              Format::ElapsedTime(processVector[i].UpTime()).c_str());
     mvwprintw(window, row, command_column,
-              process.Command().substr(0, window->_maxx - 46).c_str());
+              processVector[i].Command().substr(0, window->_maxx - 46).c_str());
   }
 }
 

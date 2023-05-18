@@ -29,10 +29,14 @@ std::map<int, Process>& System::Processes()
        if(processes_.count(pids[i]))
        {
             processes_.at(pids[i]).update();
+            processes_.at(pids[i]).updated = true;
        }
        else
        {
-            processes_.emplace(pids[i], Process(pids[i]));
+            Process p = Process(pids[i]);
+            p.update();
+            p.updated = true;
+            processes_.emplace(pids[i], p);
        }
     }
 
@@ -60,13 +64,13 @@ std::string System::OperatingSystem()
 // TODO: Return the number of processes actively running on the system
 int System::RunningProcesses() 
 { 
-    LinuxParser::RunningProcesses();
+    return LinuxParser::RunningProcesses();
 }
 
 // TODO: Return the total number of processes on the system
 int System::TotalProcesses() 
 { 
-    LinuxParser::TotalProcesses();
+    return LinuxParser::TotalProcesses();
 }
 
 // TODO: Return the number of seconds since the system started running
